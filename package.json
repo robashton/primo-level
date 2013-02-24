@@ -1,0 +1,20 @@
+{
+  "name": "primo-level",
+  "version": "0.0.0",
+  "description": "A level system for PrimoJS",
+  "main": "level.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/robashton/primo-level.git"
+  },
+  "keywords": [
+    "PrimoJS",
+    "javascript",
+    "gaming"
+  ],
+  "author": "Rob Ashton",
+  "license": "MIT"
+}
