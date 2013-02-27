@@ -51,7 +51,10 @@ Level.prototype = {
     return this.spritemaps[name]
   },
   load: function() {
-    $.getJSON(this.path, _.bind(this.onLevelReceived, this))
+    var self = this
+    request(this.path, function(err, response, body) {
+      self.onLevelReceived(JSON.parse(body))
+    })
   },
   worldToTile: function(world) {
     return Math.floor(world / this.rawdata.tilesize)

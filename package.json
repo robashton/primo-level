@@ -19,6 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "primo-spritemap": "~0.1.0",
-    "browser-request": "~0.2.1"
+    "browser-request": "~0.2.1",
+    "primo-events": "~1.0.2",
+    "underscore": "~1.4.4"
   }
 }
