@@ -16,5 +16,9 @@
     "gaming"
   ],
   "author": "Rob Ashton",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "primo-spritemap": "~0.1.0",
+    "browser-request": "~0.2.1"
+  }
 }

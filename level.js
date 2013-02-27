@@ -1,8 +1,8 @@
 var Eventable = require('primo-events')
-var _ = require('underscore')
-var SpriteMap = require('primo-spritemap')
-
-var Layer = require('./layer')
+  , _ = require('underscore')
+  , SpriteMap = require('primo-spritemap')
+  , Layer = require('./layer')
+  , request = require('browser-request')
 
 var Level = function(engine, path) {
   Eventable.call(this)
@@ -18,6 +18,20 @@ var Level = function(engine, path) {
 }
 
 Level.prototype = {
+  loadInto: function(scene) {
+    scene.reset()
+    scene.on('pre-render', this.render, this)
+    var i = 0
+    for(i = 0; i < this.rawdata.entities.length; i++) {
+      var config = this.rawdata.entities[i]
+      var type = this.entityTypes[config.type]
+      scene.spawnEntity(type, config.data)
+    }
+  },
+  render: function(context) {
+    for(var i = 0; i < this.layers.length; i++) 
+      this.layers[i].render(context)
+  },
   width: function() {
     return this.rawdata.width
   },
@@ -134,11 +148,11 @@ Level.prototype = {
     var tilesize = this.tilesize()
     var engine = this.engine
 
-    this.require(layer.tileset, function(tileset) {
+    this.getJson(layer.tileset, function(tileset) {
       tilesets[layer.tileset] = tileset
       spritemaps[layer.tileset] = 
-        engine.resources.spritemap(tileset.path, tileset.tilesize, tileset.tilesize)
-      spritemaps[layer.tileset].generateCollisionMaps(tilesize, tilesize)
+        engine.resources.spritemap(tileset.path, tileset.countwidth, tileset.countheight)
+      spritemaps[layer.tileset].generateCollisionMaps(tileset.tilesize, tileset.tilesize)
     })
   },
   loadEntities: function() {
@@ -153,15 +167,17 @@ Level.prototype = {
       entities[key] = type
     })
   },
-  require: function(dep, callback) {
+
+  getJson: function(dep, callback) {
     var self = this
     this.pendingResults++
-    require([dep], function(res) {
-       callback(res)
-       self.pendingResults--
-       self.tryFinish()
+    request(dep, function(err, response, body) {
+      callback(JSON.parse(body))
+      self.pendingResults--
+      self.tryFinish()
     })
   },
+
   tryFinish: function() {
     if(this.pendingResults === 0 && this.finished) {
       this.createLayers()
@@ -176,15 +192,6 @@ Level.prototype = {
   forEachLayer: function(cb) {
     for(var i = 0 ; i < this.layers.length; i++) {
       cb(this.layers[i])
-    }
-  },
-  loadIntoScene: function(scene) {
-    scene.reset()
-    var i = 0
-    for(i = 0; i < this.rawdata.entities.length; i++) {
-      var config = this.rawdata.entities[i]
-      var type = this.entityTypes[config.type]
-      scene.spawnEntity(type, config.data)
     }
   },
   indexForWorldCoords: function(x, y) {
