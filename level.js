@@ -163,9 +163,7 @@ Level.prototype = {
   loadEntity: function(key) {
     var path = this.rawdata.entityTypes[key]
     var entities = this.entityTypes
-    this.require(path, function(type) {
-      entities[key] = type
-    })
+    entities[key] = require(path) // can probably get rid of this
   },
 
   getJson: function(dep, callback) {
